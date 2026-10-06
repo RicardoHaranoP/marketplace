@@ -51,7 +51,9 @@ Para parar a aplicação, pressione `Ctrl+C` no terminal em que o Maven está ro
 
 ## API
 
-A raiz `http://localhost:8080/` apresenta os links HAL da API e o HAL Explorer, quando disponível. O recurso de clientes é publicado em `/customers`.
+Com a aplicação em execução, acesse o [HAL Explorer](http://localhost:8080/explorer/index.html#uri=/), fornecido pela dependência `spring-data-rest-hal-explorer`. Pela interface, é possível navegar e utilizar os recursos da API sem montar cada URL manualmente. A URL inicial usa `#uri=/` para abrir a raiz da API.
+
+O recurso de clientes é publicado em `/customers`.
 
 Exemplos de chamadas:
 
