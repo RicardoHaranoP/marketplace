@@ -1,0 +1,8 @@
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\Marketplace.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\Customer.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\CustomerId.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\CustomerRepository.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\persistence\entity\Address.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\persistence\entity\Customer.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\persistence\repository\CustomerEntityRepository.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\persistence\repository\JpaCustomerRepository.java

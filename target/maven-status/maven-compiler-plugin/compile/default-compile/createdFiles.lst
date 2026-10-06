@@ -1,0 +1,7 @@
+org\yourcompany\yourproject\registration\domain\CustomerId.class
+org\yourcompany\yourproject\registration\infrastructure\persistence\repository\CustomerEntityRepository.class
+org\yourcompany\yourproject\registration\domain\Customer.class
+org\yourcompany\yourproject\Marketplace.class
+org\yourcompany\yourproject\registration\domain\CustomerRepository.class
+org\yourcompany\yourproject\registration\infrastructure\persistence\entity\Customer.class
+org\yourcompany\yourproject\registration\infrastructure\persistence\repository\JpaCustomerRepository.class
