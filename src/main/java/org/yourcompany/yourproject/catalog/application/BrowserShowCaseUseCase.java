@@ -3,6 +3,7 @@ package org.yourcompany.yourproject.catalog.application;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.yourcompany.yourproject.catalog.application.dto.EventOutput;
 import org.yourcompany.yourproject.catalog.domain.Event;
@@ -18,6 +19,7 @@ public class BrowserShowCaseUseCase {
         this.eventEnricher = eventEnricher;
     }
 
+    @Cacheable(value = "showcase", unless = "#result.isEmpty()")
     public List<EventOutput> execute() {
         var futures = eventRepository.findAll().stream()
                 .map(eventEnricher::enrich)
