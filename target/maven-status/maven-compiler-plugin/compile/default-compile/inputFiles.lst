@@ -1,7 +1,10 @@
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\CatalogConfiguration.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\event\EventListener.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\event\EventMetadataEventListener.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\entity\Event.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\entity\EventMetadata.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\repository\EventEntityRepository.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\repository\EventMetadataEntityRepository.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\Marketplace.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\Customer.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\CustomerId.java

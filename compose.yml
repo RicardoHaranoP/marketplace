@@ -32,7 +32,20 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  catalog-metadata-database:
+    image: mongo:8.2
+    ports:
+      - "27018:27017"
+    volumes:
+      - metadata_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
   
 volumes:
   registration-database-data:
   catalog_data:
+  metadata_data:
