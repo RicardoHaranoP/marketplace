@@ -3,8 +3,6 @@ package org.yourcompany.yourproject.catalog.domain;
 import java.time.Instant;
 import java.util.Optional;
 
-import org.yourcompany.yourproject.catalog.infrastructure.persistence.entity.EventMetadata;
-
 import lombok.Getter;
 import lombok.Setter;
 
