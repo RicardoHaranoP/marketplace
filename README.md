@@ -1,19 +1,47 @@
 # Marketplace
 
-Aplicação backend para cadastro e consulta de clientes, construída com Spring Boot. Os dados são persistidos em MySQL e a API REST é exposta pelo Spring Data REST no formato HAL.
+Backend de cadastro de clientes e consulta de eventos, construído com Spring Boot. O módulo de registro persiste clientes no MySQL; o catálogo usa outro banco MySQL para eventos e MongoDB para os metadados dos eventos. A API REST inclui recursos HAL gerados pelo Spring Data REST e uma rota própria para exibir o catálogo enriquecido.
 
 ## Funcionalidades
 
-- Exposição dos recursos de clientes por meio do Spring Data REST.
-- Consulta paginada e ordenada de clientes.
-- Busca de clientes cujo primeiro nome começa com um texto, sem diferenciar maiúsculas e minúsculas.
-- Projeção HAL `except`, que retorna primeiro nome, sobrenome e endereço.
-- Associação um-para-um entre cliente e endereço. A persistência do cliente também persiste o endereço associado.
-- Validação de campos do cliente, incluindo nome obrigatório e e-mail obrigatório com formato válido.
-- Eventos de criação, atualização e exclusão de clientes registrados pelo handler da aplicação.
-- Verificação de saúde da aplicação pelo Actuator.
+### Cadastro de clientes
 
-O método `deleteById` do repositório está explicitamente desabilitado para exposição REST.
+- Exposição dos clientes por meio do Spring Data REST, com paginação e ordenação.
+- Busca por prefixo do primeiro nome, sem diferenciar maiúsculas e minúsculas.
+- Projeção HAL `except`, com primeiro nome, sobrenome e endereço.
+- Associação um-para-um entre cliente e endereço; salvar o cliente também persiste o endereço.
+- Validação de primeiro nome obrigatório e e-mail obrigatório com formato válido.
+- Registro de eventos de criação, atualização e exclusão de clientes.
+- Exclusão direta por `deleteById` desabilitada na API REST.
+
+### Catálogo de eventos
+
+- Persistência dos eventos em um banco MySQL separado do banco de clientes.
+- Persistência de descrições, requisitos técnicos, setores e assentos no MongoDB, associados ao evento por UUID.
+- Enriquecimento assíncrono dos eventos com seus metadados usando `@Async` e `CompletableFuture`.
+- Endpoint `GET /showcase` que retorna eventos em DTOs com metadados e assentos agrupados por setor.
+- Repositórios de eventos e metadados publicados pelo Spring Data REST em formato HAL.
+- Registro de eventos de criação, atualização e exclusão de eventos nos logs.
+
+### Operação
+
+- Endpoint de saúde disponível em `/actuator/health`.
+- Diagramas Mermaid podem ser visualizados em um visualizador Markdown compatível; não é necessária dependência Mermaid no backend.
+
+## Arquitetura
+
+```mermaid
+flowchart LR
+  Cliente[Cliente HTTP] --> API[Spring Boot API]
+  API --> Reg[Registro de clientes]
+  API --> Showcase[GET /showcase]
+  Reg --> MySQLReg[(MySQL registration)]
+  Showcase --> Catalogo[Eventos]
+  Catalogo --> MySQLCatalog[(MySQL catalog)]
+  Catalogo --> Enricher[Enriquecimento assíncrono]
+  Enricher --> Mongo[(MongoDB metadata)]
+  API --> HAL[Spring Data REST / HAL]
+```
 
 ## Tecnologias e dependências
 
@@ -21,6 +49,7 @@ O método `deleteById` do repositório está explicitamente desabilitado para ex
 - **Spring Boot 3.4.5**: inicialização e configuração da aplicação.
 - **spring-boot-starter-web**: servidor HTTP e suporte web.
 - **spring-boot-starter-data-jpa**: persistência JPA e integração com Hibernate.
+- **spring-boot-starter-data-mongodb**: persistência dos metadados do catálogo no MongoDB.
 - **spring-boot-starter-data-rest**: exposição dos repositórios como recursos REST em HAL.
 - **spring-data-rest-hal-explorer**: interface para navegar pela API HAL.
 - **spring-boot-starter-validation**: validação com Jakarta Bean Validation.
@@ -45,7 +74,7 @@ No PowerShell, entre na pasta `marketplace` e execute:
 mvn spring-boot:run
 ```
 
-O Spring Boot inicia o serviço MySQL definido em `compose.yml` automaticamente. Na primeira execução, o Docker pode precisar baixar a imagem `mysql:9.6`. Quando a aplicação estiver pronta, o servidor HTTP estará disponível em `http://localhost:8080`.
+O Spring Boot inicia os serviços definidos em `compose.yml` automaticamente. Na primeira execução, o Docker pode precisar baixar as imagens `mysql:9.6` e `mongo:8.2`. Quando a aplicação estiver pronta, o servidor HTTP estará disponível em `http://localhost:8080`.
 
 Para parar a aplicação, pressione `Ctrl+C` no terminal em que o Maven está rodando. A configuração Compose usa `start-only`, então o contêiner do banco pode continuar ativo após a aplicação parar.
 
@@ -53,7 +82,7 @@ Para parar a aplicação, pressione `Ctrl+C` no terminal em que o Maven está ro
 
 Com a aplicação em execução, acesse o [HAL Explorer](http://localhost:8080/explorer/index.html#uri=/), fornecido pela dependência `spring-data-rest-hal-explorer`. Pela interface, é possível navegar e utilizar os recursos da API sem montar cada URL manualmente. A URL inicial usa `#uri=/` para abrir a raiz da API.
 
-O recurso de clientes é publicado em `/customers`.
+Os recursos de clientes e eventos são publicados pelo Spring Data REST em HAL. A rota de clientes é `/customers`; os nomes dos recursos HAL de eventos e metadados podem ser consultados seguindo os links retornados pela raiz da API (`http://localhost:8080/`).
 
 Exemplos de chamadas:
 
@@ -62,8 +91,11 @@ GET http://localhost:8080/customers
 GET http://localhost:8080/customers/{uuid}
 GET http://localhost:8080/customers/search/findByFirstNameStartingWithIgnoreCase?firstName=ana
 GET http://localhost:8080/customers?projection=except
+GET http://localhost:8080/showcase
 GET http://localhost:8080/actuator/health
 ```
+
+O endpoint `/showcase` retorna uma lista de eventos. Cada item contém `id`, `title`, `date` e `metadata`; quando houver metadados, `metadata` inclui `eventDescription`, `technicalRequirements` e `seatsBySector`. Os assentos são agrupados por setor e incluem identificador, setor e preço.
 
 Para criar um cliente, envie um `POST` para `/customers` com `Content-Type: application/json`. Exemplo:
 
@@ -85,18 +117,18 @@ Use o UUID retornado ou o link `self` na resposta HAL para consultar um cliente 
 
 ## Banco de dados
 
-O `compose.yml` inicia o MySQL 9.6 com estes parâmetros de desenvolvimento:
+O `compose.yml` inicia os bancos de desenvolvimento abaixo:
 
-- Banco: `registration`
-- Usuário: `app`
-- Senha: `app`
-- Senha do usuário root: `root`
-- Porta no computador: `3307`
-- Porta do MySQL no contêiner: `3306`
-- Volume persistente: `registration-database-data`
+| Serviço | Banco | Porta local | Credenciais |
+| --- | --- | ---: | --- |
+| MySQL de registro | `registration` | `3307` | usuário `app`, senha `app` |
+| MySQL de catálogo | `catalog` | `3308` | usuário `app`, senha `app` |
+| MongoDB de metadados | `test` (padrão) | `27018` | sem autenticação configurada |
 
-Para ferramentas instaladas no computador, conecte-se a `localhost:3307`. Esses dados de acesso são apenas para desenvolvimento local; use credenciais seguras fora desse ambiente.
+As senhas root do MySQL são `root`. Os dados dos três serviços ficam em volumes Docker persistentes. Essas credenciais são apenas para desenvolvimento local; use credenciais seguras fora desse ambiente.
 
 ## Configurações
 
-O arquivo `src/main/resources/application.properties` configura o nome da aplicação, a criação/atualização do schema com `spring.jpa.hibernate.ddl-auto=update`, a exibição de SQL e os detalhes do health endpoint. Como `management.endpoint.health.show-details=always` expõe detalhes de saúde, essa configuração deve ser revista antes de disponibilizar a aplicação em um ambiente compartilhado ou de produção.
+O arquivo `src/main/resources/application.properties` configura conexões separadas para registro (`localhost:3307/registration`) e catálogo (`localhost:3308/catalog`). O schema de registro usa `update`; o schema de catálogo usa `create` e, portanto, suas tabelas são recriadas quando a aplicação inicia. Altere para uma estratégia de migração antes de preservar dados de catálogo entre reinicializações ou usar um ambiente compartilhado.
+
+O Actuator está configurado para mostrar detalhes de saúde. Restrinja essa informação antes de disponibilizar a aplicação em um ambiente compartilhado ou de produção.
