@@ -5,27 +5,30 @@ import java.util.LinkedHashMap;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-
-@Configuration (proxyBeanMethods = false)
-@EnableJpaRepositories(basePackages = "org.yourcompany.yourproject.catalog",
-            entityManagerFactoryRef = "catalogEntityManagerFactory",
-            transactionManagerRef = "catalogTransactionManager"
-)
+@Configuration(proxyBeanMethods = false)
+@EnableJpaRepositories(basePackages = "org.yourcompany.yourproject.catalog", entityManagerFactoryRef = "catalogEntityManagerFactory", transactionManagerRef = "catalogTransactionManager")
 @EnableMongoRepositories
 @EnableMongoAuditing
 public class CatalogConfiguration {
@@ -52,18 +55,34 @@ public class CatalogConfiguration {
 
     @Qualifier("catalog")
     @Bean(defaultCandidate = false)
-    public LocalContainerEntityManagerFactoryBean catalogEntityManagerFactory(@Qualifier("catalog") DataSource dataSource, @Qualifier("catalog") JpaProperties jpaProperties) {
-        var builder = new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), x -> new LinkedHashMap<>(jpaProperties.getProperties()), null);
+    public LocalContainerEntityManagerFactoryBean catalogEntityManagerFactory(
+            @Qualifier("catalog") DataSource dataSource, @Qualifier("catalog") JpaProperties jpaProperties) {
+        var builder = new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
+                x -> new LinkedHashMap<>(jpaProperties.getProperties()), null);
         return builder
-            .dataSource(dataSource)
-            .packages("org.yourcompany.yourproject.catalog")
-            .persistenceUnit("catalog")
-            .build();
+                .dataSource(dataSource)
+                .packages("org.yourcompany.yourproject.catalog")
+                .persistenceUnit("catalog")
+                .build();
     }
 
     @Qualifier("catalog")
     @Bean
-    public PlatformTransactionManager catalogTransactionManager(@Qualifier("catalog") LocalContainerEntityManagerFactoryBean emf) {
+    public PlatformTransactionManager catalogTransactionManager(
+            @Qualifier("catalog") LocalContainerEntityManagerFactoryBean emf) {
         return new JpaTransactionManager(emf.getObject());
+    }
+
+    @Primary
+    @Bean
+    public RedisConnectionFactory catalogRedisConnectionFactory(@Value("${catalog.redis.host}") String hostName,
+            @Value("${catalog.redis.port}") int port) {
+        return new JedisConnectionFactory(new RedisStandaloneConfiguration(hostName, port));
+    }
+
+    @Primary
+    @Bean
+    public RedisCacheManager catalogCacheManager(RedisConnectionFactory connectionFactory) {
+        return RedisCacheManager.builder(connectionFactory).build();
     }
 }

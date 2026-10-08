@@ -1,23 +1,26 @@
 package org.yourcompany.yourproject.ticketing.infrastructure.persistence.repository;
 
-import org.springframework.stereotype.Repository;
-import org.yourcompany.yourproject.ticketing.domain.Event;
-import org.yourcompany.yourproject.ticketing.domain.EventRepository;
-
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.yourcompany.yourproject.ticketing.domain.CustomerId;
 import org.yourcompany.yourproject.ticketing.domain.Event;
+import org.yourcompany.yourproject.ticketing.domain.EventId;
 import org.yourcompany.yourproject.ticketing.domain.EventRepository;
 import org.yourcompany.yourproject.ticketing.domain.Seat;
+import org.yourcompany.yourproject.ticketing.domain.SeatId;
 import org.yourcompany.yourproject.ticketing.domain.Sector;
+import org.yourcompany.yourproject.ticketing.infrastructure.persistence.entity.SeatLock;
 
 @Repository
-public class PostgresEventRepository implements EventRepository {
+public class WorkOfUnitEventRepository implements EventRepository {
     private final EventCrudRepository eventCrudRepository;
+    private final RedisSeatLockRepository redisSeatLockRepository;
 
-    public PostgresEventRepository(EventCrudRepository eventCrudRepository){
+    public WorkOfUnitEventRepository(EventCrudRepository eventCrudRepository, RedisSeatLockRepository redisSeatLockRepository){
         this.eventCrudRepository = eventCrudRepository;
+        this.redisSeatLockRepository = redisSeatLockRepository;
     }
 
     @Override
@@ -45,5 +48,23 @@ public class PostgresEventRepository implements EventRepository {
             sectors);
 
         eventCrudRepository.save(entity);
+    }
+
+    @Override 
+    public boolean existSeat(EventId eventId, SeatId seatId) {
+        return eventCrudRepository.existsByCorrelationIdAndSectorsSeatsCorrelationId(eventId.id(), seatId.id());
+    }
+
+    @Override
+    public boolean tryLockSeat(EventId eventId, SeatId seatId, CustomerId customerId) {
+        String lockId = eventId.id().toString() + ":" + seatId.id();
+
+        if (redisSeatLockRepository.existsById(lockId)) {
+            return false;
+        }
+
+        var lock = new SeatLock(lockId, customerId.id().toString(), Instant.now());
+        redisSeatLockRepository.save(lock);
+        return true;
     }
 }
