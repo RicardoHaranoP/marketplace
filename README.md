@@ -1,6 +1,6 @@
 # Marketplace
 
-Backend de cadastro de clientes e consulta de eventos, construído com Spring Boot. O módulo de registro persiste clientes no MySQL; o catálogo usa outro banco MySQL para eventos e MongoDB para os metadados dos eventos. A API REST inclui recursos HAL gerados pelo Spring Data REST e uma rota própria para exibir o catálogo enriquecido.
+Backend de cadastro de clientes, catálogo de eventos e seleção de assentos, construído com Spring Boot. O módulo de registro persiste clientes no MySQL; o catálogo usa outro MySQL e MongoDB; ticketing usa PostgreSQL para eventos, setores e assentos e Redis para bloqueios temporários de assentos.
 
 ## Funcionalidades
 
@@ -22,6 +22,14 @@ Backend de cadastro de clientes e consulta de eventos, construído com Spring Bo
 - Endpoint `GET /showcase` que retorna eventos em DTOs com metadados e assentos agrupados por setor.
 - Repositórios de eventos e metadados publicados pelo Spring Data REST em formato HAL.
 - Registro de eventos de criação, atualização e exclusão de eventos nos logs.
+
+### Ticketing
+
+- Consumo assíncrono dos eventos de criação de clientes e atualização de eventos publicados pela aplicação.
+- Persistência de eventos, setores e assentos no PostgreSQL.
+- Endpoint `POST /ticketing/events/{eventId}/seats/select` para solicitar a seleção de um assento.
+- Verificação de que o assento pertence ao evento antes de tentar reservá-lo.
+- Bloqueio temporário no Redis por evento e assento, com expiração após 30 segundos.
 
 ### Operação
 
