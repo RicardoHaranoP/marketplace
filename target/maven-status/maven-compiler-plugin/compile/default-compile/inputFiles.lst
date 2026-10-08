@@ -20,6 +20,8 @@ C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\repository\EventMetadataEntityRepository.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\repository\JpaEventRepository.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\catalog\infrastructure\persistence\repository\MongoEventMetadataRepository.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\common\infrastructure\event\dto\CustomerCreated.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\common\infrastructure\event\dto\EventUpdated.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\Marketplace.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\Customer.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\domain\CustomerId.java
@@ -31,3 +33,12 @@ C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\persistence\repository\CustomerEntityRepository.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\persistence\repository\JpaCustomerRepository.java
 C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\registration\infrastructure\RegistrationConfiguration.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\application\CreateCustomerUseCase.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\domain\Customer.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\domain\CustomerId.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\domain\CustomerRepository.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\infrastructure\event\TicketingConfiguration.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\infrastructure\event\TicketingEventListener.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\infrastructure\persistence\entity\Customer.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\infrastructure\persistence\repository\CustomerCrudRepository.java
+C:\Users\10969836996\Documents\aprendendo\dioJava\marketplace\src\main\java\org\yourcompany\yourproject\ticketing\infrastructure\persistence\repository\PostgresCustomerRepository.java
